@@ -2,6 +2,7 @@ set nocompatible
 set number
 set hlsearch
 set ruler
+set noswapfile
 
 filetype on
 filetype indent on
