@@ -27,6 +27,7 @@ Bundle 'matze/vim-move'
 
 Bundle 'mmalecki/vim-node.js'
 Bundle 'vim-ruby/vim-ruby'
+Bundle 'scrooloose/syntastic'
 Bundle 'tpope/vim-haml'
 Bundle 'bronson/vim-trailing-whitespace'
 Bundle 'digitaltoad/vim-jade'
