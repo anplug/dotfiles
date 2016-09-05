@@ -3,6 +3,7 @@ set number
 set hlsearch
 set ruler
 set noswapfile
+set mouse =""
 
 filetype on
 filetype indent on
