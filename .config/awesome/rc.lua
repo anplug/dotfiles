@@ -1,5 +1,5 @@
-local gears = require("gears")
 -- Standard awesome library
+local gears = require("gears")
 local awful = require("awful")
 awful.rules = require("awful.rules")
 require("awful.autofocus")
@@ -12,7 +12,6 @@ local naughty = require("naughty")
 local menubar = require("menubar")
 local lain = require("lain")
 local vicious = require("vicious")
-
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -41,14 +40,13 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
--- beautiful.init("/usr/share/awesome/themes/default/theme.lua")
-beautiful.init("~/.config/awesome/themes/default/theme.lua")
+beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "xfce4-terminal"
-browser = "google-chrome-stable"
+browser = "chromium"
 file_man = "nemo"
-editor = os.getenv("EDITOR") or "vim"
+editor = os.getenv("EDITOR") or "nvim"
 editor_cmd = terminal .. " -e " .. editor
 
 -- Default modkey.
@@ -89,36 +87,33 @@ end
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ "browser", "code", "console", "files", "skype" }, s, layouts[1])
+    tags[s] = awful.tag({ "browser", "code", "console", "files", "others", "messages" }, s, layouts[1])
 end
 -- }}}
 
 -- {{{ Menu
 -- Create a laucher widget and a main menu
-myawesomemenu = {
+
+mymainmenu = awful.menu({ items = {
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
    { "quit", awesome.quit }
-}
-
-mymainmenu = awful.menu({ items = { { "browser", browser},
-                                    { "file_man", file_man}, 
-                                    { "RDP", "remmina" },
-                                    { "awesome", myawesomemenu, beautiful.awesome_icon },
-                                  }
-                        })
+}})
 
 mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
 
--- Menubar configurationRR
+-- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
 -- }}}
 
 -- {{{ Wibox
 -- Create a textclock widget
+
 mytextclock = awful.widget.textclock("%H:%M")
+
+-- Custom Widgets ---
 
 -- Calendar
 lain.widgets.calendar:attach(mytextclock)
@@ -139,10 +134,12 @@ vicious.register(cpu_temp_widget, vicious.widgets.thermal, "CPU($1°C):", 2, "th
 cpuwidget = wibox.widget.textbox()
 vicious.register(cpuwidget, vicious.widgets.cpu, "$1%")
 
-
--- Separator
+-- Separators
 separator = wibox.widget.textbox()
-separator:set_text(" --- ")
+separator:set_text(" | ")
+
+empty_separator = wibox.widget.textbox()
+empty_separator:set_text("  ")
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -175,8 +172,15 @@ mytasklist.buttons = awful.util.table.join(
                                                   c:raise()
                                               end
                                           end),
-                     awful.button({ }, 3, function (c)
-                                              c:kill()
+                     awful.button({ }, 3, function ()
+                                              if instance then
+                                                  instance:hide()
+                                                  instance = nil
+                                              else
+                                                  instance = awful.menu.clients({
+                                                      theme = { width = 250 }
+                                                  })
+                                              end
                                           end),
                      awful.button({ }, 4, function ()
                                               awful.client.focus.byidx(1)
@@ -209,14 +213,14 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
-    left_layout:add(mylauncher)
+    --left_layout:add(mylauncher)
     left_layout:add(mytaglist[s])
     left_layout:add(mypromptbox[s])
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
-    right_layout:add(separator)
+    right_layout:add(empty_separator)
     right_layout:add(batwidget)
     right_layout:add(separator)
     right_layout:add(cpu_temp_widget)
@@ -289,12 +293,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1)      end),
     awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end),
     awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end),
---    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
---    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
-    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) 
-              naughty.notify({ title = 'Layout', text = awful.layout.getname(), timeout = 2 }) end),
-    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1)
+    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1)
               naughty.notify({ title = 'Layout', text = awful.layout.getname(), timeout = 2 }) end),
 
     awful.key({ modkey, "Control" }, "n", awful.client.restore),
@@ -312,7 +312,6 @@ globalkeys = awful.util.table.join(
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end)
 )
-
 
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
@@ -482,8 +481,6 @@ end)
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
-
--- Autostart
 
 awful.util.spawn_with_shell("setxkbmap -layout us,ru -variant -option grp:alt_shift_toggle,terminate:ctrl_alt_bksp &")
 awful.util.spawn_with_shell("xxkb &")
