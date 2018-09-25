@@ -122,7 +122,9 @@ mytextclock = wibox.widget.textclock()
 -- Custom Widgets ---
 
 -- Calendar
-lain.widgets.calendar:attach(mytextclock)
+lain.widget.cal {
+  attach_to = {mytextclock}
+}
 
 -- Battery widget
 batwidget = wibox.widget.textbox()
