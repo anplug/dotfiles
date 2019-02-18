@@ -23,8 +23,9 @@ Bundle 'tpope/vim-fugitive'
 Bundle 'tpope/vim-rails'
 Bundle 'tpope/vim-endwise'
 Bundle 'scrooloose/nerdtree'
-Bundle 'kien/ctrlp.vim'
 Bundle 'matze/vim-move'
+Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plugin 'junegunn/fzf.vim'
 
 Bundle 'mmalecki/vim-node.js'
 Bundle 'vim-ruby/vim-ruby'
@@ -35,6 +36,7 @@ Bundle 'digitaltoad/vim-jade'
 
 syntax on
 
+nnoremap <C-p> :Files<CR>
 autocmd vimenter * NERDTree
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
