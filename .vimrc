@@ -13,7 +13,7 @@ filetype plugin on
 set expandtab
 set tabstop=2
 set shiftwidth=2
-set cmdheight=2
+set cmdheight=1
 set updatetime=500
 
 call plug#begin('~/.vim/plugged')
@@ -26,33 +26,44 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-haml'
+Plug 'tpope/vim-rails'
 Plug 'scrooloose/nerdtree'
 Plug 'matze/vim-move'
-Plug 'scrooloose/syntastic'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'posva/vim-vue'
 Plug 'wavded/vim-stylus'
 Plug 'easymotion/vim-easymotion'
-Plug 'mmalecki/vim-node.js'
+Plug 'jelera/vim-javascript-syntax'
 Plug 'vim-ruby/vim-ruby'
-Plug 'tpope/vim-haml'
-Plug 'tpope/vim-rails'
-Plug 'rust-lang/rust.vim'
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 
 call plug#end()
 
 nnoremap <C-p> :Files<CR>
 
+" Using tab for trigger completion with characters ahead and navigate.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+let g:move_key_modifier = 'C'
 syntax on
+
+highlight Pmenu ctermbg=8c9dad guibg=gray
 
 autocmd vimenter * NERDTree
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
-let g:move_key_modifier = 'C'
-let g:ycm_server_python_interpreter="/usr/bin/python2"
 map <C-n> :NERDTreeToggle<CR>
 
 autocmd BufNewFile,BufRead *.styl set filetype=stylus
