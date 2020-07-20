@@ -1,6 +1,6 @@
 ! Use a nice truetype font and size by default...
-xterm*faceName: DejaVu Sans Mono Book
-xterm*faceSize: 11
+XTerm*faceName: DejaVu Sans Mono Book
+XTerm*faceSize: 11
 
 ! Scroll bar
 ! xterm*rightScrollBar: true
@@ -18,7 +18,12 @@ xterm*savelines: 16384
 ! double-click to select whole URLs :D
 xterm*charClass: 33:48,36-47:48,58-59:48,61:48,63-64:48,95:48,126:48
 
-! DOS-box colours...
+! Default black-screen mode
+! XTerm.vt100.reverseVideo: true
+
+XTerm.termName: xterm-256color
+
+! Override colors to prettier ones
 xterm*foreground: rgb:a8/a8/a8
 xterm*background: rgb:00/00/00
 xterm*color0: rgb:00/00/00
