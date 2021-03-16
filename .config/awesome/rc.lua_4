@@ -46,10 +46,10 @@ end
 beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "xfce4-terminal"
-browser = "chromium"
+terminal = "xterm"
+browser = "firefox"
 file_man = "nemo"
-editor = os.getenv("EDITOR") or "nvim"
+editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 
 -- Default modkey.
@@ -63,10 +63,10 @@ modkey = "Mod4"
 awful.layout.layouts = {
     -- awful.layout.suit.floating,
     awful.layout.suit.tile,
-    -- awful.layout.suit.tile.left,
+    awful.layout.suit.tile.left,
     awful.layout.suit.tile.bottom,
-    -- awful.layout.suit.tile.top,
-    -- awful.layout.suit.fair,
+    awful.layout.suit.tile.top,
+    awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
     -- awful.layout.suit.spiral,
     -- awful.layout.suit.spiral.dwindle,
@@ -212,7 +212,7 @@ awful.screen.connect_for_each_screen(function(s)
     set_wallpaper(s)
 
     -- Each screen has its own tag table.
-    awful.tag({ "browser", "code", "console", "files", "messages", "other", "vm1", "vm2" }, s, awful.layout.layouts[1])
+    awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -594,8 +594,8 @@ end)
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
-awful.util.spawn_with_shell("setxkbmap -layout us,ru -variant -option grp:alt_shift_toggle,terminate:ctrl_alt_bksp &")
+awful.util.spawn_with_shell("setxkbmap -layout us,ru,se,ua -option -option grp:alt_shift_toggle,caps:escape &")
 awful.util.spawn_with_shell("xxkb &")
 awful.util.spawn_with_shell("xbindkeys")
 awful.util.spawn_with_shell("xset r rate 250 50")
-awful.util.spawn_with_shell("setxkbmap -option caps:escape")
+awful.util.spawn_with_shell('xinput disable "Elan Touchpad"')
