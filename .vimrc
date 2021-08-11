@@ -5,7 +5,6 @@ set ruler
 set noswapfile
 set nobackup
 set mouse =""
-
 filetype on
 filetype indent on
 filetype plugin on
@@ -28,6 +27,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-haml'
 Plug 'tpope/vim-rails'
+
 Plug 'scrooloose/nerdtree'
 Plug 'matze/vim-move'
 Plug 'bronson/vim-trailing-whitespace'
@@ -37,18 +37,11 @@ Plug 'wavded/vim-stylus'
 Plug 'easymotion/vim-easymotion'
 Plug 'jelera/vim-javascript-syntax'
 Plug 'vim-ruby/vim-ruby'
-Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+Plug 'rhysd/vim-crystal'
 
 call plug#end()
 
 nnoremap <C-p> :Files<CR>
-
-" Using tab for trigger completion with characters ahead and navigate.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 function! s:check_back_space() abort
   let col = col('.') - 1
