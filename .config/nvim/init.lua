@@ -15,10 +15,24 @@ vim.cmd [[noswapfile]]
 
 require('packer').startup(function()
   use { 'wbthomason/packer.nvim' }
+
   use { 'rafi/awesome-vim-colorschemes' }
   use { 'matze/vim-move' }
+  use { 'tpope/vim-fugitive' }
+  use { 'tpope/vim-endwise' }
+
   use { 'vijaymarupudi/nvim-fzf' }
   use { 'ibhagwan/fzf-lua' }
+
+  use { 'ntpeters/vim-better-whitespace' }
+  use { 'editorconfig/editorconfig-vim' }
+
+  -- use { 'posva/vim-vue' }
+  -- use { 'wavded/vim-stylus' }
+  -- use { 'jelera/vim-javascript-syntax' }
+  -- use { 'vim-ruby/vim-ruby' }
+  -- use { 'rhysd/vim-crystal' }
+
   use {
     'kyazdani42/nvim-tree.lua',
     requires = 'kyazdani42/nvim-web-devicons'
@@ -34,6 +48,13 @@ vim.cmd [[colorscheme molokai]]
 
 vim.cmd [[
   let g:move_key_modifier = 'C'
+]]
+
+-- vim-better-whitespace
+
+vim.cmd [[
+  let g:better_whitespace_enabled=1
+  let g:strip_whitespace_on_save=1
 ]]
 
 -- fzf
