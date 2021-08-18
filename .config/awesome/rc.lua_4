@@ -49,7 +49,7 @@ beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
 terminal = "xterm"
 browser = "firefox"
 file_man = "nemo"
-editor = os.getenv("EDITOR") or "vim"
+editor = os.getenv("EDITOR") or "nvim"
 editor_cmd = terminal .. " -e " .. editor
 
 -- Default modkey.
@@ -59,24 +59,25 @@ editor_cmd = terminal .. " -e " .. editor
 -- However, you can use another modifier like Mod1, but it may interact with others.
 modkey = "Mod4"
 
+local l = awful.layout.suit
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
-    -- awful.layout.suit.floating,
-    awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.tile.top,
-    awful.layout.suit.fair,
-    awful.layout.suit.fair.horizontal,
-    -- awful.layout.suit.spiral,
-    -- awful.layout.suit.spiral.dwindle,
-    awful.layout.suit.max,
-    -- awful.layout.suit.max.fullscreen,
-    -- awful.layout.suit.magnifier,
-    -- awful.layout.suit.corner.nw,
-    -- awful.layout.suit.corner.ne,
-    -- awful.layout.suit.corner.sw,
-    -- awful.layout.suit.corner.se,
+    -- l.floating,
+    l.tile,
+    l.tile.left,
+    -- l.tile.bottom,
+    l.tile.top,
+    -- l.fair,
+    l.fair.horizontal,
+    -- l.spiral,
+    -- l.spiral.dwindle,
+    l.max,
+    -- l.max.fullscreen,
+    -- l.magnifier,
+    -- l.corner.nw,
+    -- l.corner.ne,
+    -- l.corner.sw,
+    -- l.corner.se,
 }
 -- }}}
 
@@ -207,12 +208,17 @@ end
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
 screen.connect_signal("property::geometry", set_wallpaper)
 
+
 awful.screen.connect_for_each_screen(function(s)
     -- Wallpaper
     set_wallpaper(s)
 
     -- Each screen has its own tag table.
-    awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
+    awful.tag(
+      { "1", "2", "3", "4", "5", "6", "7", "8", "9" },
+      s,
+      { l.max, l.max, l.tile, l.max, l.tile, l.max, l.tile, l.tile, l.max }
+    )
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -586,7 +592,7 @@ end)
 
 -- Enable sloppy focus, so that focus follows mouse.
 client.connect_signal("mouse::enter", function(c)
-    if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+    if awful.layout.get(c.screen) ~= l.magnifier
         and awful.client.focus.filter(c) then
         client.focus = c
     end
