@@ -20,6 +20,7 @@ require('packer').startup(function()
   use { 'matze/vim-move' }
   use { 'tpope/vim-fugitive' }
   use { 'tpope/vim-endwise' }
+  use { 'vim-test/vim-test' }
 
   use { 'vijaymarupudi/nvim-fzf' }
   use { 'ibhagwan/fzf-lua' }
@@ -50,6 +51,20 @@ vim.cmd [[
   let g:move_key_modifier = 'C'
 ]]
 
+-- vim-test
+
+if vim.fn.has('nvim') then
+  vim.cmd [[tmap <C-o> <C-\><C-n>]]
+end
+
+vim.api.nvim_set_keymap('n', 't<C-n>', ":TestNearest<CR>", {silent = true})
+vim.api.nvim_set_keymap('n', 't<C-f>', ":TestFile<CR>", {silent = true})
+vim.api.nvim_set_keymap('n', 't<C-a>', ":TestSuite<CR>", {silent = true})
+
+vim.cmd [[
+  let test#strategy = 'neovim'
+]]
+
 -- vim-better-whitespace
 
 vim.cmd [[
@@ -67,7 +82,7 @@ require('nvim-web-devicons').setup {
   default = true;
 }
 
-vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<CR>", {noremap = true})
+vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<CR>", {noremap = true, silent= true})
 vim.cmd [[
   let g:nvim_tree_auto_open = 1
   let g:nvim_tree_auto_close = 1
