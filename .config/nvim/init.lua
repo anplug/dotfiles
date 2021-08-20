@@ -1,7 +1,7 @@
 vim.o.number = true
 vim.o.hlsearch = true
 vim.o.ruler = true
-vim.o.mouse = ""
+vim.o.mouse = ''
 vim.o.expandtab = true
 vim.o.tabstop = 2
 vim.o.shiftwidth = 2
@@ -9,7 +9,7 @@ vim.o.cmdheight = 1
 vim.o.updatetime = 500
 vim.o.termguicolors = true
 
-vim.wo.colorcolumn = "107"
+vim.wo.colorcolumn = '107'
 
 vim.cmd [[noswapfile]]
 
@@ -57,9 +57,9 @@ if vim.fn.has('nvim') then
   vim.cmd [[tmap <C-o> <C-\><C-n>]]
 end
 
-vim.api.nvim_set_keymap('n', 't<C-n>', ":TestNearest<CR>", {silent = true})
-vim.api.nvim_set_keymap('n', 't<C-f>', ":TestFile<CR>", {silent = true})
-vim.api.nvim_set_keymap('n', 't<C-a>', ":TestSuite<CR>", {silent = true})
+vim.api.nvim_set_keymap('n', 't<C-n>', ':TestNearest<CR>', {silent = true})
+vim.api.nvim_set_keymap('n', 't<C-f>', ':TestFile<CR>', {silent = true})
+vim.api.nvim_set_keymap('n', 't<C-a>', ':TestSuite<CR>', {silent = true})
 
 vim.cmd [[
   let test#strategy = 'neovim'
@@ -75,6 +75,8 @@ vim.cmd [[
 -- fzf
 
 vim.api.nvim_set_keymap('n', '<C-p>', ":lua require('fzf-lua').files()<CR>", {noremap = true})
+-- It's highly recommended to install Ripgrep otherwise standard Grep will kill your CPU
+vim.api.nvim_set_keymap('n', '<C-s>', ':FzfLua grep<CR>', {})
 
 -- nvim-tree and icons
 
@@ -82,7 +84,7 @@ require('nvim-web-devicons').setup {
   default = true;
 }
 
-vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<CR>", {noremap = true, silent= true})
+vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle<CR>', {noremap = true, silent= true})
 vim.cmd [[
   let g:nvim_tree_auto_open = 1
   let g:nvim_tree_auto_close = 1
