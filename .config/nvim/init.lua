@@ -8,10 +8,9 @@ vim.o.shiftwidth = 2
 vim.o.cmdheight = 1
 vim.o.updatetime = 500
 vim.o.termguicolors = true
+vim.o.swapfile = false
 
 vim.wo.colorcolumn = '107'
-
-vim.cmd [[noswapfile]]
 
 require('packer').startup(function()
   use { 'wbthomason/packer.nvim' }
