@@ -27,17 +27,26 @@ require('packer').startup(function()
   use { 'ntpeters/vim-better-whitespace' }
   use { 'editorconfig/editorconfig-vim' }
 
-  -- use { 'posva/vim-vue' }
-  -- use { 'wavded/vim-stylus' }
-  -- use { 'jelera/vim-javascript-syntax' }
-  -- use { 'vim-ruby/vim-ruby' }
-  -- use { 'rhysd/vim-crystal' }
+  use { 'neovim/nvim-lspconfig' }
 
   use {
     'kyazdani42/nvim-tree.lua',
     requires = 'kyazdani42/nvim-web-devicons'
   }
 end)
+
+-- Laguage servers
+
+local nvim_lsp = require('lspconfig')
+
+vim.api.nvim_set_keymap('n', '<C-i>',
+  ':lua vim.lsp.diagnostic.show_line_diagnostics({focusable = false})<CR>',
+  {silent = true}
+)
+
+nvim_lsp.solargraph.setup{}
+nvim_lsp.rust_analyzer.setup{}
+nvim_lsp.clangd.setup{}
 
 -- Colorschemes
 -- Dark: one, afterglow, challenger_deep, dogrun, gotham
