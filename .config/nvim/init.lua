@@ -88,16 +88,19 @@ vim.api.nvim_set_keymap('n', '<C-s>', ':FzfLua grep<CR>', {})
 
 -- nvim-tree and icons
 
+require('nvim-tree').setup {
+  open_on_setup = false,
+  open_on_tab = true,
+  auto_close = true;
+}
+
 require('nvim-web-devicons').setup {
   default = true;
 }
 
 vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle<CR>', {noremap = true, silent= true})
 vim.cmd [[
-  let g:nvim_tree_auto_open = 1
-  let g:nvim_tree_auto_close = 1
   let g:nvim_tree_highlight_opened_files = 1
-  let g:nvim_tree_tab_open = 1
   let g:nvim_tree_add_trailing = 1
   let g:nvim_tree_icons = { 'default': '' }
 ]]
