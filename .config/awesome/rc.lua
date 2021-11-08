@@ -522,13 +522,16 @@ awful.rules.rules = {
       }, properties = { floating = true }},
 
     -- Add titlebars to normal clients and dialogs
-    { rule_any = {type = { "normal", "dialog" }
-      }, properties = { titlebars_enabled = false }
-    },
+    { rule_any = { type = { "normal", "dialog" } }, properties = { titlebars_enabled = false } },
 
-    -- Set Firefox to always map on the tag named "2" on screen 1.
-    -- { rule = { class = "Firefox" },
-    --   properties = { screen = 1, tag = "2" } },
+    -- Put apps to specific tags
+    { rule = { instance = "firefox" },          properties = { tag = "1", screen = 1 } },
+    { rule = { instance = "obsidian" },         properties = { tag = "4", screen = 1 } },
+    { rule = { instance = "insomnia" },         properties = { tag = "4", screen = 1 } },
+    { rule = { instance = "slack" },            properties = { tag = "5", screen = 1 } },
+    { rule = { instance = "telegram-desktop" }, properties = { tag = "5", screen = 1 } },
+    { rule = { instance = "nemo" },             properties = { tag = "6", screen = 1 } },
+    { rule = { instance = "atril" },            properties = { tag = "6", screen = 1 } },
 }
 -- }}}
 
