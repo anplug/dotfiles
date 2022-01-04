@@ -10,7 +10,7 @@ vim.o.updatetime = 500
 vim.o.termguicolors = true
 vim.o.swapfile = false
 
-vim.wo.colorcolumn = '107'
+vim.wo.colorcolumn = '80,100,108'
 
 require('packer').startup(function()
   use { 'wbthomason/packer.nvim' }
@@ -33,6 +33,8 @@ require('packer').startup(function()
     'kyazdani42/nvim-tree.lua',
     requires = 'kyazdani42/nvim-web-devicons'
   }
+
+  use { 'github/copilot.vim' }
 end)
 
 -- Laguage servers
@@ -91,7 +93,11 @@ vim.api.nvim_set_keymap('n', '<C-s>', ':FzfLua grep<CR>', {})
 require('nvim-tree').setup {
   open_on_setup = false,
   open_on_tab = true,
-  auto_close = true;
+  auto_close = true,
+  git = {
+    enable = true,
+    ignore = false,
+  };
 }
 
 require('nvim-web-devicons').setup {
