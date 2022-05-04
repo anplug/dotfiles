@@ -1,0 +1,50 @@
+#!/bin/sh
+
+VERTICAL_SHIFT=0x517
+
+single () {
+  single.sh
+}
+
+dual () {
+  xrandr --output eDP1 --mode 1920x1080 --pos ${VERTICAL_SHIFT} --rotate normal --output ${INTERFACE} --primary --mode ${RESOLUTION} --pos 1920x0 --rotate normal
+}
+
+CONNECTIONS=$(xrandr --current)
+INTERFACE=0
+RESOLUTION=0
+FROM_OFFICE=false
+POSITION=0x0
+
+INTERNAL_DISPLAY=$(echo "$CONNECTIONS" | grep "eDP1")
+INTERNAL_DISPLAY_LENGTH=${#INTERNAL_DISPLAY}
+INTERFACES=$(echo "$CONNECTIONS" | grep " connected")
+CONNECTED_INTERFACES=${INTERFACES:$INTERNAL_DISPLAY_LENGTH + 1:-1}
+
+if [[ $CONNECTED_INTERFACES =~ (HDMI.|DP.) ]]; then
+  INTERFACE=${BASH_REMATCH[0]}
+else
+  echo No connected HDMI or DP interface found, falling back to single mode
+  single
+  exit
+fi
+
+echo ${INTERFACE} connected
+
+if [[ -n $(echo "$CONNECTIONS" | grep 2560x1440) ]]; then
+  RESOLUTION=2560x1440
+  FROM_OFFICE=true
+else
+  RESOLUTION=1920x1080
+  VERTICAL_SHIFT=0x0
+fi
+
+echo Resolution is ${RESOLUTION}
+
+if $FROM_OFFICE; then
+  echo Working from the Office
+else
+  echo Working from Home
+fi
+
+dual
