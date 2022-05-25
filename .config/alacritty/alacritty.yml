@@ -181,6 +181,9 @@ colors:
   #primary:
   #  background: '#1d1f21'
   #  foreground: '#c5c8c6'
+  primary:
+    background: '0x000000'
+    foreground: '0xb6b6b6'
 
     # Bright and dim foreground colors
     #
@@ -200,6 +203,11 @@ colors:
   #cursor:
   #  text: CellBackground
   #  cursor: CellForeground
+  #
+  # Colors the cursor will use if `custom_cursor_colors` is true
+  cursor:
+    text: '0xaaaaaa'
+    cursor: '0xffffff'
 
   # Vi mode cursor colors
   #
@@ -268,25 +276,25 @@ colors:
 
   # Normal colors
   normal:
-    black:   '#1d1f21'
-    red:     '#cc6666'
-    green:   '#b5bd68'
-    yellow:  '#f0c674'
-    blue:    '#81a2be'
-    magenta: '#b294bb'
-    cyan:    '#4a4c4d'
-    white:   '#c5c8c6'
+    black:   '0x000000'
+    red:     '0x990000'
+    green:   '0x00a600'
+    yellow:  '0x999900'
+    blue:    '0x0000b2'
+    magenta: '0xb200b2'
+    cyan:    '0x00a6b2'
+    white:   '0xbfbfbf'
 
   # Bright colors
   bright:
-    black:   '#666666'
-    red:     '#d54e53'
-    green:   '#b9ca4a'
-    yellow:  '#e7c547'
-    blue:    '#7aa6da'
-    magenta: '#c397d8'
-    cyan:    '#4a4c4d'
-    white:   '#eaeaea'
+    black:   '0x666666'
+    red:     '0xe50000'
+    green:   '0x00d900'
+    yellow:  '0xe5e500'
+    blue:    '0x0000ff'
+    magenta: '0xe500e5'
+    cyan:    '0x00e5e5'
+    white:   '0xe5e5e5'
 
   # Dim colors
   #
