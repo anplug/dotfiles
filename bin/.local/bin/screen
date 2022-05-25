@@ -1,20 +1,24 @@
 #!/bin/sh
 
-VERTICAL_SHIFT=0x517
-
 single () {
-  single.sh
+  xrandr --output VIRTUAL1 --off --output eDP1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP1 --off --output HDMI2 --off --output HDMI1 --off --output DP2 --off
 }
 
 dual () {
-  xrandr --output eDP1 --mode 1920x1080 --pos ${VERTICAL_SHIFT} --rotate normal --output ${INTERFACE} --primary --mode ${RESOLUTION} --pos 1920x0 --rotate normal
+  xrandr --output eDP1 --mode 1920x1080 --pos ${VERTICAL_SHIFT} --rotate normal --output ${INTERFACE} --primary --mode ${RESOLUTION} --rate ${FPS} --pos 1920x0 --rotate normal
 }
+
+if [[ $1 == single ]]; then
+  echo Single mode selected
+  single
+  exit
+fi
 
 CONNECTIONS=$(xrandr --current)
 INTERFACE=0
 RESOLUTION=0
-FROM_OFFICE=false
-POSITION=0x0
+FPS=60.00
+VERTICAL_SHIFT=0x517
 
 INTERNAL_DISPLAY=$(echo "$CONNECTIONS" | grep "eDP1")
 INTERNAL_DISPLAY_LENGTH=${#INTERNAL_DISPLAY}
@@ -24,7 +28,7 @@ CONNECTED_INTERFACES=${INTERFACES:$INTERNAL_DISPLAY_LENGTH + 1:-1}
 if [[ $CONNECTED_INTERFACES =~ (HDMI.|DP.) ]]; then
   INTERFACE=${BASH_REMATCH[0]}
 else
-  echo No connected HDMI or DP interface found, falling back to single mode
+  echo No connected HDMI or DP interface found, selecting single mode
   single
   exit
 fi
@@ -33,18 +37,15 @@ echo ${INTERFACE} connected
 
 if [[ -n $(echo "$CONNECTIONS" | grep 2560x1440) ]]; then
   RESOLUTION=2560x1440
-  FROM_OFFICE=true
-else
-  RESOLUTION=1920x1080
-  VERTICAL_SHIFT=0x0
-fi
-
-echo Resolution is ${RESOLUTION}
-
-if $FROM_OFFICE; then
+  FPS=59.95
   echo Working from the Office
 else
+  RESOLUTION=1920x1080
+  FPS=120.00
+  VERTICAL_SHIFT=0x0
   echo Working from Home
 fi
+
+echo Resolution is ${RESOLUTION} : ${FPS}hz
 
 dual
