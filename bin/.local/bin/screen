@@ -1,62 +1,181 @@
-#!/bin/sh
+#!/bin/ruby
 
-single () {
-  xrandr --output VIRTUAL1 --off --output eDP1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP1 --off --output HDMI2 --off --output HDMI1 --off --output DP2 --off
-}
+INTERNAL_INTERFACE = 'eDP1'
+# Automatically turn off internal screen for such resolution
+HUGE_EXTERNAL_RESOLUTION = '3440x1440'
 
-dual () {
-  xrandr --output eDP1 --mode 1920x1080 --pos ${VERTICAL_SHIFT} --rotate normal --output ${INTERFACE} --primary --mode ${RESOLUTION} --rate ${FPS} --pos 1920x0 --rotate normal
-}
+class Connection
+  def initialize
+    @connections = %x(xrandr --current).split("\n")
+    @external_connected = false
+    @interface = interface
+  end
 
-single_external () {
-  xrandr --output eDP1 --off --output ${INTERFACE} --primary --mode ${RESOLUTION} --rate ${FPS} --pos 1920x0 --rotate normal
-}
+  def interface
+    return @interface if @interface
 
-if [[ $1 == single ]]; then
-  echo Single mode selected
-  single
-  exit
-fi
+    @interface_line_number = @connections.find_index do |line|
+      matched = /(.*) connected/.match(line)
+      next unless matched
 
-CONNECTIONS=$(xrandr --current)
-INTERFACE=0
-RESOLUTION=0
-FPS=60.00
-VERTICAL_SHIFT=0x517
+      interface = matched = matched[1]
+      if interface == INTERNAL_INTERFACE
+        next
+      else
+        @external_connected = true
+        @interface = interface
+      end
+    end
 
-INTERNAL_DISPLAY=$(echo "$CONNECTIONS" | grep "eDP1")
-INTERNAL_DISPLAY_LENGTH=${#INTERNAL_DISPLAY}
-INTERFACES=$(echo "$CONNECTIONS" | grep " connected")
-CONNECTED_INTERFACES=${INTERFACES:$INTERNAL_DISPLAY_LENGTH + 1:-1}
+    @interface
+  end
 
-if [[ $CONNECTED_INTERFACES =~ (HDMI.|DP.) ]]; then
-  INTERFACE=${BASH_REMATCH[0]}
+  def external_connected?
+    @external_connected
+  end
+
+  def resolution
+    return unless external_connected?
+    return @resolution if @resolution
+
+    match = /(\d*x\d*)/.match(highest_setting_string)
+    raise 'Wrong resolution setting!' unless match
+    @resolution = match[1]
+  end
+
+  def fps
+    return unless external_connected?
+    return @fps if @fps
+
+    match = /(\d*\.\d*)[\s|\*]\+/.match(highest_setting_string)
+    raise 'Wrong fps setting!' unless match
+    @fps = match[1]
+  end
+
+  def width
+    resolution.split('x')[0].to_i
+  end
+
+  def height
+    resolution.split('x')[1].to_i
+  end
+
+  private
+
+  def highest_setting_string
+    @highest_setting_string ||= @connections[@interface_line_number + 1]
+  end
+end
+
+class Resolver
+  INTERNAL_REASONS = [
+    :force_internal,
+    :auto_internal
+  ]
+
+  EXTERNAL_REASONS = [
+    :force_external,
+    :auto_external
+  ]
+
+  DUAL_REASONS = [:auto]
+
+  INTERNAL_STRING = "--output #{INTERNAL_INTERFACE} --mode 1920x1080 --rotate normal"
+
+  def resolve(reason, position: nil)
+    @reason = reason
+    @position = position || 'top'
+    if INTERNAL_REASONS.include?(reason)
+      internal!
+    elsif EXTERNAL_REASONS.include?(reason)
+      external!
+    elsif DUAL_REASONS.include?(reason)
+      dual!
+    end
+  end
+
+  private
+
+  def internal!
+    if @reason == :force_internal
+      puts 'Internal display selected manually, activating...'
+    else
+      puts 'No external displays connected, activating internal display...'
+    end
+
+    %x(xrandr #{INTERNAL_STRING} --primary --pos 0x0 \
+      --output VIRTUAL1 --off \
+      --output DP1 --off \
+      --output HDMI2 --off \
+      --output HDMI1 --off\
+      --output DP2 --off)
+  end
+
+  def external!
+    if @reason == :force_external
+      puts 'External display selected manually, activating...'
+    else
+      puts 'Big screen detected, activating external display only...'
+    end
+
+    puts "Resolution: #{CONN.resolution} : #{CONN.fps}hz"
+
+    %x(xrandr --output #{INTERNAL_INTERFACE} --off \
+      --output #{CONN.interface} --primary --mode #{CONN.resolution} \
+      --rate #{CONN.fps} --pos 0x0 --rotate normal)
+  end
+
+  def dual!
+    puts 'Activating dualhead mode...'
+
+    puts "Resolution: #{CONN.resolution} : #{CONN.fps}hz"
+    puts "Internal pos #{internal_position}"
+    puts "External pos #{external_position}"
+
+    %x(xrandr #{INTERNAL_STRING} --pos #{internal_position} \
+      --output #{CONN.interface} --primary --mode #{CONN.resolution} \
+      --rate #{CONN.fps} --pos #{external_position} --rotate normal)
+  end
+
+  def internal_position
+    if @position == 'top'
+      "#{CONN.width / 4}x#{CONN.height}"
+    elsif @position == 'left'
+      "#{CONN.width}x#{CONN.height / 2}"
+    else # right
+      "0x#{CONN.height / 2}"
+    end
+  end
+
+  def external_position
+    if @position == 'top'
+      '0x0'
+    elsif @position == 'left'
+      '0x0'
+    else # right
+      '1920x0'
+    end
+  end
+end
+
+def print_help
+  puts "Usage:\n\tscreen [internal|external|top|right|left]"
+end
+
+CONN = Connection.new
+RESOLVER = Resolver.new
+
+if ['help', '-h', '\h'].include?(ARGV[0])
+  print_help
+elsif ARGV[0] == 'internal'
+  RESOLVER.resolve(:force_internal)
+elsif ARGV[0] == 'external'
+  RESOLVER.resolve(:force_external)
+elsif !CONN.external_connected?
+  RESOLVER.resolve(:auto_internal)
+elsif CONN.resolution == HUGE_EXTERNAL_RESOLUTION
+  RESOLVER.resolve(:auto_external)
 else
-  echo No connected HDMI or DP interface found, selecting single mode
-  single
-  exit
-fi
-
-echo ${INTERFACE} connected
-
-if [[ -n $(echo "$CONNECTIONS" | grep 3440x1440) ]]; then
-  RESOLUTION=3440x1440
-  FPS=99.98
-  echo Wide screen, single head mode
-  echo Resolution is ${RESOLUTION} : ${FPS}hz
-  single_external
-  exit
-elif [[ -n $(echo "$CONNECTIONS" | grep 2560x1440) ]]; then
-  RESOLUTION=2560x1440
-  FPS=59.95
-  echo Working from the Office
-else
-  RESOLUTION=1920x1080
-  FPS=120.00
-  VERTICAL_SHIFT=0x0
-  echo Working from Home
-fi
-
-echo Resolution is ${RESOLUTION} : ${FPS}hz
-
-dual
+  position = ARGV[0] if ['left', 'right', 'top'].include?(ARGV[0])
+  RESOLVER.resolve(:auto, position: position)
+end
