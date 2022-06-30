@@ -8,6 +8,10 @@ dual () {
   xrandr --output eDP1 --mode 1920x1080 --pos ${VERTICAL_SHIFT} --rotate normal --output ${INTERFACE} --primary --mode ${RESOLUTION} --rate ${FPS} --pos 1920x0 --rotate normal
 }
 
+single_external () {
+  xrandr --output eDP1 --off --output ${INTERFACE} --primary --mode ${RESOLUTION} --rate ${FPS} --pos 1920x0 --rotate normal
+}
+
 if [[ $1 == single ]]; then
   echo Single mode selected
   single
@@ -35,7 +39,14 @@ fi
 
 echo ${INTERFACE} connected
 
-if [[ -n $(echo "$CONNECTIONS" | grep 2560x1440) ]]; then
+if [[ -n $(echo "$CONNECTIONS" | grep 3440x1440) ]]; then
+  RESOLUTION=3440x1440
+  FPS=99.98
+  echo Wide screen, single head mode
+  echo Resolution is ${RESOLUTION} : ${FPS}hz
+  single_external
+  exit
+elif [[ -n $(echo "$CONNECTIONS" | grep 2560x1440) ]]; then
   RESOLUTION=2560x1440
   FPS=59.95
   echo Working from the Office
