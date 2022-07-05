@@ -47,9 +47,7 @@ class Connection
     return unless external_connected?
     return @fps if @fps
 
-    match = /(\d*\.\d*)[\s|\*]\+/.match(highest_setting_string)
-    raise 'Wrong fps setting!' unless match
-    @fps = match[1]
+    @fps = highest_setting_string.scan(/(\d*\.\d*)/).flatten.map(&:to_f).max
   end
 
   def width
@@ -82,9 +80,11 @@ class Resolver
 
   INTERNAL_STRING = "--output #{INTERNAL_INTERFACE} --mode 1920x1080 --rotate normal"
 
-  def resolve(reason, position: nil)
+  def resolve(reason, position: nil, low_profile: nil)
     @reason = reason
     @position = position || 'top'
+    @low_profile = low_profile
+
     if INTERNAL_REASONS.include?(reason)
       internal!
     elsif EXTERNAL_REASONS.include?(reason)
@@ -138,12 +138,13 @@ class Resolver
   end
 
   def internal_position
+    shift = @low_profile ? CONN.height / 4 : CONN.height / 2
     if @position == 'top'
       "#{CONN.width / 4}x#{CONN.height}"
     elsif @position == 'left'
-      "#{CONN.width}x#{CONN.height / 2}"
+      "#{CONN.width}x#{shift}"
     else # right
-      "0x#{CONN.height / 2}"
+      "0x#{shift}"
     end
   end
 
@@ -159,7 +160,7 @@ class Resolver
 end
 
 def print_help
-  puts "Usage:\n\tscreen [internal|external|top|right|left]"
+  puts "Usage:\n\tscreen [internal|external|top|right|left] [low]"
 end
 
 CONN = Connection.new
@@ -177,5 +178,6 @@ elsif CONN.resolution == HUGE_EXTERNAL_RESOLUTION
   RESOLVER.resolve(:auto_external)
 else
   position = ARGV[0] if ['left', 'right', 'top'].include?(ARGV[0])
-  RESOLVER.resolve(:auto, position: position)
+  low_profile = true if ARGV[1] == 'low' && !position.nil?
+  RESOLVER.resolve(:auto, position: position, low_profile: low_profile)
 end
