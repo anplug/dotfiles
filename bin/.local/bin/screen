@@ -105,7 +105,7 @@ class Resolver
       puts 'No external displays connected, activating internal display...'
     end
 
-    "xrandr #{INTERNAL_STRING} --primary --pos 0x0 #{off_strings(without: [INTERNAL_OUTPUT])}"
+    %x(xrandr #{INTERNAL_STRING} --primary --pos 0x0 #{off_strings(without: [INTERNAL_OUTPUT])})
   end
 
   def external!
