@@ -1,8 +1,10 @@
 #!/bin/ruby
 
-INTERNAL_INTERFACE = 'eDP1'
 # Automatically turn off internal screen for such resolution
 HUGE_EXTERNAL_RESOLUTION = '3440x1440'
+
+INTERNAL_OUTPUT = 'eDP1'
+POSSIBLE_OUTPUTS = %w(eDP1 VIRTUAL1 DP1 DP2 HDMI1 HDMI2)
 
 class Connection
   def initialize
@@ -19,7 +21,7 @@ class Connection
       next unless matched
 
       interface = matched = matched[1]
-      if interface == INTERNAL_INTERFACE
+      if interface == INTERNAL_OUTPUT
         next
       else
         @external_connected = true
@@ -78,7 +80,7 @@ class Resolver
 
   DUAL_REASONS = [:auto]
 
-  INTERNAL_STRING = "--output #{INTERNAL_INTERFACE} --mode 1920x1080 --rotate normal"
+  INTERNAL_STRING = "--output #{INTERNAL_OUTPUT} --mode 1920x1080 --rotate normal"
 
   def resolve(reason, position: nil, low_profile: nil)
     @reason = reason
@@ -103,12 +105,7 @@ class Resolver
       puts 'No external displays connected, activating internal display...'
     end
 
-    %x(xrandr #{INTERNAL_STRING} --primary --pos 0x0 \
-      --output VIRTUAL1 --off \
-      --output DP1 --off \
-      --output HDMI2 --off \
-      --output HDMI1 --off\
-      --output DP2 --off)
+    "xrandr #{INTERNAL_STRING} --primary --pos 0x0 #{off_strings(without: [INTERNAL_OUTPUT])}"
   end
 
   def external!
@@ -120,9 +117,8 @@ class Resolver
 
     puts "Resolution: #{CONN.resolution} : #{CONN.fps}hz"
 
-    %x(xrandr --output #{INTERNAL_INTERFACE} --off \
-      --output #{CONN.interface} --primary --mode #{CONN.resolution} \
-      --rate #{CONN.fps} --pos 0x0 --rotate normal)
+    %x(xrandr --output #{CONN.interface} --primary --mode #{CONN.resolution} \
+      --rate #{CONN.fps} --pos 0x0 --rotate normal #{off_strings(without: [CONN.interface])})
   end
 
   def dual!
@@ -134,7 +130,8 @@ class Resolver
 
     %x(xrandr #{INTERNAL_STRING} --pos #{internal_position} \
       --output #{CONN.interface} --primary --mode #{CONN.resolution} \
-      --rate #{CONN.fps} --pos #{external_position} --rotate normal)
+      --rate #{CONN.fps} --pos #{external_position} --rotate normal \
+      #{off_strings(without: [INTERNAL_OUTPUT, CONN.interface])})
   end
 
   def internal_position
@@ -156,6 +153,12 @@ class Resolver
     else # right
       '1920x0'
     end
+  end
+
+  def off_strings(without: [])
+    POSSIBLE_OUTPUTS.reject { |out| without.include?(out) }.map { |out|
+      "--output #{out} --off"
+    }.join(' ')
   end
 end
 
