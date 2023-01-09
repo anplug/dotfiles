@@ -603,7 +603,7 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
-awful.util.spawn_with_shell("setxkbmap -layout us,ru,se,ua -option -option grp:alt_shift_toggle,caps:escape &")
+awful.util.spawn_with_shell("setxkbmap -layout us,ua -option -option grp:alt_shift_toggle,caps:escape &")
 awful.util.spawn_with_shell("xxkb &")
 awful.util.spawn_with_shell("xbindkeys")
 awful.util.spawn_with_shell("xset r rate 250 50")
