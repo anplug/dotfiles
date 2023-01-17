@@ -1,0 +1,10 @@
+        <variant>
+          <configItem>
+            <name>lat</name>
+            <shortDescription>Latin</shortDescription>
+            <description>Latin (ANSI-based)</description>
+            <languageList>
+              <iso639Id>ua</iso639Id>
+            </languageList>
+          </configItem>
+        </variant>
