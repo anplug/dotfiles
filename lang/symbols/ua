@@ -1,14 +1,32 @@
+// Latin ukrainian keyboard layouts
+
 partial alphanumeric_keys
 xkb_symbols "lat" {
 
     include "us(basic)"
 
-    name[Group1]= "Ukrainian (Latin)";
+    name[Group1]= "Ukrainian (latin)";
 
     key <AC02> {[s, S, scaron,      Scaron]};
     key <AC05> {[g, G, gcircumflex, Gcircumflex]};
     key <AB01> {[z, Z, zcaron,      Zcaron]};
     key <AB03> {[c, C, ccaron,      Ccaron]};
+
+    include "level3(ralt_switch)"
+};
+
+partial alphanumeric_keys
+xkb_symbols "lat_ex" {
+
+    include "us(basic)"
+    name[Group1]= "Ukrainian (latin exclusive)";
+
+    key <AD01> {[gcircumflex, Gcircumflex           ]};
+    key <AD02> {[scaron,      Scaron                ]};
+    key <AC10> {[ccaron,      Ccaron                ]};
+    key <AB02> {[zcaron,      Zcaron                ]};
+    key <AB08> {[comma,       less,       semicolnon]};
+    key <AB09> {[period,      greater,    colon     ]};
 
     include "level3(ralt_switch)"
 };

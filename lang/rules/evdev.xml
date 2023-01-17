@@ -1,10 +1,12 @@
         <variant>
           <configItem>
             <name>lat</name>
-            <shortDescription>Latin</shortDescription>
-            <description>Latin (ANSI-based)</description>
-            <languageList>
-              <iso639Id>ua</iso639Id>
-            </languageList>
+            <description>Ukrainian (latin)</description>
+          </configItem>
+        </variant>
+        <variant>
+          <configItem>
+            <name>lat_ex</name>
+            <description>Ukrainian (latin exclusive)</description>
           </configItem>
         </variant>
