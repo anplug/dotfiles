@@ -1,3 +1,7 @@
+---- disable netrw and use nvim-tree instead
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 vim.o.number = true
 vim.o.hlsearch = true
 vim.o.ruler = true
@@ -9,6 +13,8 @@ vim.o.cmdheight = 1
 vim.o.updatetime = 500
 vim.o.termguicolors = true
 vim.o.swapfile = false
+
+vim.opt.hidden = false -- no hiden opened buffers
 
 vim.wo.colorcolumn = '80,100,108'
 
@@ -42,8 +48,7 @@ end)
 local nvim_lsp = require('lspconfig')
 
 vim.api.nvim_set_keymap('n', '<C-i>',
-  ':lua vim.lsp.diagnostic.show_line_diagnostics({focusable = false})<CR>',
-  {silent = true}
+  ':lua vim.diagnostic.open_float()<CR>', {silent = true}
 )
 
 nvim_lsp.solargraph.setup{}
@@ -57,9 +62,8 @@ vim.cmd [[colorscheme molokai]]
 
 -- vim-move
 
-vim.cmd [[
-  let g:move_key_modifier = 'C'
-]]
+vim.g.move_key_modifier = 'C'
+vim.g.move_key_modifier_visualmode = 'S'
 
 -- vim-test
 
@@ -77,35 +81,35 @@ vim.cmd [[
 
 -- vim-better-whitespace
 
-vim.cmd [[
-  let g:better_whitespace_enabled=1
-  let g:strip_whitespace_on_save=1
-]]
+vim.g.better_whitespace_enabled = 1
+vim.g.strip_whitespace_on_save = 1
 
 -- fzf
 
-vim.api.nvim_set_keymap('n', '<C-p>', ":lua require('fzf-lua').files()<CR>", {noremap = true})
+vim.api.nvim_set_keymap('n', '<C-p>',
+  ":lua require('fzf-lua').files()<CR>", {noremap = true})
 -- It's highly recommended to install Ripgrep otherwise standard Grep will kill your CPU
 vim.api.nvim_set_keymap('n', '<C-s>', ':FzfLua grep<CR>', {})
 
 -- nvim-tree and icons
 
-require('nvim-tree').setup {
-  open_on_setup = false,
-  open_on_tab = true,
+require('nvim-tree').setup({
+  renderer = {
+    highlight_opened_files = 'all',
+    icons = {
+      glyphs = {
+        default = '',
+      },
+    },
+  },
   git = {
     enable = true,
     ignore = false,
   };
-}
+})
 
 require('nvim-web-devicons').setup {
   default = true;
 }
 
 vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle<CR>', {noremap = true, silent= true})
-vim.cmd [[
-  let g:nvim_tree_highlight_opened_files = 1
-  let g:nvim_tree_add_trailing = 1
-  let g:nvim_tree_icons = { 'default': '' }
-]]
