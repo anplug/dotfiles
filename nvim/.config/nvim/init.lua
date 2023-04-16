@@ -75,10 +75,6 @@ vim.api.nvim_set_keymap('n', 't<C-n>', ':TestNearest<CR>', {silent = true})
 vim.api.nvim_set_keymap('n', 't<C-f>', ':TestFile<CR>', {silent = true})
 vim.api.nvim_set_keymap('n', 't<C-a>', ':TestSuite<CR>', {silent = true})
 
-vim.cmd [[
-  let test#strategy = 'neovim'
-]]
-
 -- vim-better-whitespace
 
 vim.g.better_whitespace_enabled = 1
