@@ -26,7 +26,6 @@ require('packer').startup(function()
   use { 'matze/vim-move' }
   use { 'tpope/vim-fugitive' }
   use { 'tpope/vim-endwise' }
-  use { 'vim-test/vim-test' }
 
   use { 'vijaymarupudi/nvim-fzf' }
   use { 'ibhagwan/fzf-lua' }
@@ -45,18 +44,25 @@ require('packer').startup(function()
   use { "neovim/nvim-lspconfig" }
   use { "williamboman/mason.nvim", config = true }
   use { "williamboman/mason-lspconfig.nvim" }
+
+  use { "github/copilot.vim" }
+  use {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    branch = 'canary',
+    requires = "nvim-lua/plenary.nvim"
+  }
 end)
 
 -- Laguage servers
 
 require('mason').setup()
 require('mason-lspconfig').setup {
-  ensure_installed = { 'ruby_ls', "rust_analyzer", 'clangd', 'lua_ls' }
+  ensure_installed = { "rust_analyzer", 'clangd', 'lua_ls' }
 }
 
 local nvim_lsp = require('lspconfig')
 
-nvim_lsp.ruby_ls.setup{}
+-- nvim_lsp.ruby_ls.setup{}
 nvim_lsp.rust_analyzer.setup{}
 nvim_lsp.clangd.setup{}
 nvim_lsp.lua_ls.setup {
@@ -94,7 +100,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+    vim.keymap.set('n', '<C-[]>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
     vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
@@ -117,16 +123,6 @@ vim.cmd [[colorscheme molokai]]
 
 vim.g.move_key_modifier = 'C'
 vim.g.move_key_modifier_visualmode = 'S'
-
--- vim-test
-
-if vim.fn.has('nvim') then
-  vim.cmd [[tmap <C-o> <C-\><C-n>]]
-end
-
-vim.api.nvim_set_keymap('n', 't<C-n>', ':TestNearest<CR>', {silent = true})
-vim.api.nvim_set_keymap('n', 't<C-f>', ':TestFile<CR>', {silent = true})
-vim.api.nvim_set_keymap('n', 't<C-a>', ':TestSuite<CR>', {silent = true})
 
 -- vim-better-whitespace
 
@@ -173,3 +169,50 @@ require('nvim-web-devicons').setup {
 }
 
 vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle<CR>', {noremap = true, silent= true})
+
+-- Copilot
+
+vim.g.copilot_workspace_folders = { "~/pro" }
+
+-- CopilotChat
+
+require("CopilotChat").setup {
+  debug = true,
+  window = {
+    layout = 'vertical', -- 'vertical', 'horizontal', 'float', 'replace'
+    width = 80, -- fractional width of parent, or absolute width in columns when > 1
+    height = 0.3, -- fractional height of parent, or absolute height in rows when > 1
+  },
+}
+
+function CopilotChatReviewClear()
+  local ns = vim.api.nvim_create_namespace('copilot_review')
+  vim.diagnostic.reset(ns)
+end
+
+vim.api.nvim_create_user_command(
+  'CopilotChatReviewClear',
+  CopilotChatReviewClear,
+  {}
+)
+
+-- Keymaps
+
+vim.api.nvim_set_keymap('n', 'tt',  ":CopilotChatToggle<CR>", {silent = true})
+vim.api.nvim_set_keymap('n', 'tc',  ":CopilotChatReviewClear<CR>", {silent = true})
+
+vim.api.nvim_set_keymap('n', 'tr',  ":'<,'>CopilotChatReview<CR>", {silent = true})
+vim.api.nvim_set_keymap('n', 'te',  ":'<,'>CopilotChatExplain<CR>", {silent = true})
+vim.api.nvim_set_keymap('n', 'twt', ":'<,'>CopilotChatTests<CR>", {silent = true})
+vim.api.nvim_set_keymap('n', 'twf', ":'<,'>CopilotChatFix<CR>", {silent = true})
+vim.api.nvim_set_keymap('n', 'two', ":'<,'>CopilotChatOptimize<CR>", {silent = true})
+vim.api.nvim_set_keymap('n', 'twd', ":'<,'>CopilotChatDocs<CR>", {silent = true})
+
+vim.api.nvim_set_keymap('v', 'tr',  ":'<,'>CopilotChatReview<CR>", {silent = true})
+vim.api.nvim_set_keymap('v', 'te',  ":'<,'>CopilotChatExplain<CR>", {silent = true})
+vim.api.nvim_set_keymap('v', 'twt', ":'<,'>CopilotChatTests<CR>", {silent = true})
+vim.api.nvim_set_keymap('v', 'twf', ":'<,'>CopilotChatFix<CR>", {silent = true})
+vim.api.nvim_set_keymap('v', 'two', ":'<,'>CopilotChatOptimize<CR>", {silent = true})
+vim.api.nvim_set_keymap('v', 'twd', ":'<,'>CopilotChatDocs<CR>", {silent = true})
+
+vim.api.nvim_set_keymap('i', '<S-Tab>', 'copilot#Accept("<Tab>")', { expr = true, silent = true })
