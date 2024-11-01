@@ -29,6 +29,8 @@ require('packer').startup(function()
 
   use { 'neovim/nvim-lspconfig' }
 
+  use { 'slim-template/vim-slim' }
+
   use {
     'kyazdani42/nvim-tree.lua',
     requires = 'kyazdani42/nvim-web-devicons'
