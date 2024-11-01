@@ -106,6 +106,9 @@ require('nvim-tree').setup({
       },
     },
   },
+  view = {
+    width = 55,
+  },
   git = {
     enable = true,
     ignore = false,
