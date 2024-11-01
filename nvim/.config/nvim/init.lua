@@ -84,6 +84,14 @@ vim.cmd [[
 vim.g.better_whitespace_enabled = 1
 vim.g.strip_whitespace_on_save = 1
 
+-- https://github.com/ntpeters/vim-better-whitespace/issues/158
+-- Turn off whitespaces handling for integrated Terminal
+vim.api.nvim_create_autocmd('TermOpen', {
+  pattern = '*',
+  group = vim.api.nvim_create_augroup('vimrc', { clear = true }),
+  command = 'DisableWhitespace',
+})
+
 -- fzf
 
 vim.api.nvim_set_keymap('n', '<C-p>',
