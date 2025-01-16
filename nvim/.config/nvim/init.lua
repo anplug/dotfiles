@@ -48,7 +48,7 @@ require('packer').startup(function()
   use { "github/copilot.vim" }
   use {
     "CopilotC-Nvim/CopilotChat.nvim",
-    branch = 'canary',
+    branch = "main",
     requires = "nvim-lua/plenary.nvim"
   }
 end)
