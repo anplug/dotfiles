@@ -42,6 +42,13 @@ require('packer').startup(function()
 
   -- LSP
   use { "neovim/nvim-lspconfig" }
+  use { "hrsh7th/cmp-nvim-lsp" }
+  use { "hrsh7th/cmp-buffer" }
+  use { "hrsh7th/cmp-path" }
+  use { "hrsh7th/cmp-cmdline" }
+  use { "hrsh7th/nvim-cmp" }
+
+
   use { "williamboman/mason.nvim", config = true }
   use { "williamboman/mason-lspconfig.nvim" }
 
@@ -53,14 +60,65 @@ require('packer').startup(function()
   }
 end)
 
+-- Autocomplete (nvim-cmp)
+--
+local cmp = require('cmp')
+
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      vim.snippet.expand(args.body)
+    end,
+  },
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  },
+  mapping = cmp.mapping.preset.insert({
+    -- ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    -- ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Tab>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+  }, {
+    { name = 'buffer' },
+  })
+})
+
+-- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline({ '/', '?' }, {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = {
+    { name = 'buffer' }
+  }
+})
+
+-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(':', {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline' }
+  }),
+  matching = { disallow_symbol_nonprefix_matching = false }
+})
+
+-- Set up lspconfig.
+
+
 -- Laguage servers
 
 require('mason').setup()
 require('mason-lspconfig').setup {
-  ensure_installed = { "rust_analyzer", 'clangd', 'lua_ls' }
+  ensure_installed = { "rust_analyzer", 'clangd', 'lua_ls', 'solargraph' }
 }
 
 local nvim_lsp = require('lspconfig')
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 -- nvim_lsp.ruby_ls.setup{}
 nvim_lsp.rust_analyzer.setup{}
@@ -73,6 +131,9 @@ nvim_lsp.lua_ls.setup {
       }
     }
   }
+}
+nvim_lsp.solargraph.setup{
+  capabilities = capabilities
 }
 
 vim.api.nvim_set_keymap('n', '<C-i>', ':lua vim.diagnostic.open_float()<CR>', {silent = true})
@@ -170,49 +231,49 @@ require('nvim-web-devicons').setup {
 
 vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle<CR>', {noremap = true, silent= true})
 
--- Copilot
-
-vim.g.copilot_workspace_folders = { "~/pro" }
-
--- CopilotChat
-
-require("CopilotChat").setup {
-  debug = true,
-  window = {
-    layout = 'vertical', -- 'vertical', 'horizontal', 'float', 'replace'
-    width = 80, -- fractional width of parent, or absolute width in columns when > 1
-    height = 0.3, -- fractional height of parent, or absolute height in rows when > 1
-  },
-}
-
-function CopilotChatReviewClear()
-  local ns = vim.api.nvim_create_namespace('copilot_review')
-  vim.diagnostic.reset(ns)
-end
-
-vim.api.nvim_create_user_command(
-  'CopilotChatReviewClear',
-  CopilotChatReviewClear,
-  {}
-)
-
--- Keymaps
-
-vim.api.nvim_set_keymap('n', 'tt',  ":CopilotChatToggle<CR>", {silent = true})
-vim.api.nvim_set_keymap('n', 'tc',  ":CopilotChatReviewClear<CR>", {silent = true})
-
-vim.api.nvim_set_keymap('n', 'tr',  ":'<,'>CopilotChatReview<CR>", {silent = true})
-vim.api.nvim_set_keymap('n', 'te',  ":'<,'>CopilotChatExplain<CR>", {silent = true})
-vim.api.nvim_set_keymap('n', 'twt', ":'<,'>CopilotChatTests<CR>", {silent = true})
-vim.api.nvim_set_keymap('n', 'twf', ":'<,'>CopilotChatFix<CR>", {silent = true})
-vim.api.nvim_set_keymap('n', 'two', ":'<,'>CopilotChatOptimize<CR>", {silent = true})
-vim.api.nvim_set_keymap('n', 'twd', ":'<,'>CopilotChatDocs<CR>", {silent = true})
-
-vim.api.nvim_set_keymap('v', 'tr',  ":'<,'>CopilotChatReview<CR>", {silent = true})
-vim.api.nvim_set_keymap('v', 'te',  ":'<,'>CopilotChatExplain<CR>", {silent = true})
-vim.api.nvim_set_keymap('v', 'twt', ":'<,'>CopilotChatTests<CR>", {silent = true})
-vim.api.nvim_set_keymap('v', 'twf', ":'<,'>CopilotChatFix<CR>", {silent = true})
-vim.api.nvim_set_keymap('v', 'two', ":'<,'>CopilotChatOptimize<CR>", {silent = true})
-vim.api.nvim_set_keymap('v', 'twd', ":'<,'>CopilotChatDocs<CR>", {silent = true})
-
-vim.api.nvim_set_keymap('i', '<S-Tab>', 'copilot#Accept("<Tab>")', { expr = true, silent = true })
+-- -- Copilot
+--
+-- vim.g.copilot_workspace_folders = { "~/pro" }
+--
+-- -- CopilotChat
+--
+-- require("CopilotChat").setup {
+--   debug = true,
+--   window = {
+--     layout = 'vertical', -- 'vertical', 'horizontal', 'float', 'replace'
+--     width = 80, -- fractional width of parent, or absolute width in columns when > 1
+--     height = 0.3, -- fractional height of parent, or absolute height in rows when > 1
+--   },
+-- }
+--
+-- function CopilotChatReviewClear()
+--   local ns = vim.api.nvim_create_namespace('copilot_review')
+--   vim.diagnostic.reset(ns)
+-- end
+--
+-- vim.api.nvim_create_user_command(
+--   'CopilotChatReviewClear',
+--   CopilotChatReviewClear,
+--   {}
+-- )
+--
+-- -- Keymaps
+--
+-- vim.api.nvim_set_keymap('n', 'tt',  ":CopilotChatToggle<CR>", {silent = true})
+-- vim.api.nvim_set_keymap('n', 'tc',  ":CopilotChatReviewClear<CR>", {silent = true})
+--
+-- vim.api.nvim_set_keymap('n', 'tr',  ":'<,'>CopilotChatReview<CR>", {silent = true})
+-- vim.api.nvim_set_keymap('n', 'te',  ":'<,'>CopilotChatExplain<CR>", {silent = true})
+-- vim.api.nvim_set_keymap('n', 'twt', ":'<,'>CopilotChatTests<CR>", {silent = true})
+-- vim.api.nvim_set_keymap('n', 'twf', ":'<,'>CopilotChatFix<CR>", {silent = true})
+-- vim.api.nvim_set_keymap('n', 'two', ":'<,'>CopilotChatOptimize<CR>", {silent = true})
+-- vim.api.nvim_set_keymap('n', 'twd', ":'<,'>CopilotChatDocs<CR>", {silent = true})
+--
+-- vim.api.nvim_set_keymap('v', 'tr',  ":'<,'>CopilotChatReview<CR>", {silent = true})
+-- vim.api.nvim_set_keymap('v', 'te',  ":'<,'>CopilotChatExplain<CR>", {silent = true})
+-- vim.api.nvim_set_keymap('v', 'twt', ":'<,'>CopilotChatTests<CR>", {silent = true})
+-- vim.api.nvim_set_keymap('v', 'twf', ":'<,'>CopilotChatFix<CR>", {silent = true})
+-- vim.api.nvim_set_keymap('v', 'two', ":'<,'>CopilotChatOptimize<CR>", {silent = true})
+-- vim.api.nvim_set_keymap('v', 'twd', ":'<,'>CopilotChatDocs<CR>", {silent = true})
+--
+-- vim.api.nvim_set_keymap('i', '<S-Tab>', 'copilot#Accept("<Tab>")', { expr = true, silent = true })
