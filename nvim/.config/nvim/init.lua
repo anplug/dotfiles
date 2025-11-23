@@ -52,12 +52,12 @@ require('packer').startup(function()
   use { "williamboman/mason.nvim", config = true }
   use { "williamboman/mason-lspconfig.nvim" }
 
-  use { "github/copilot.vim" }
-  use {
-    "CopilotC-Nvim/CopilotChat.nvim",
-    branch = "main",
-    requires = "nvim-lua/plenary.nvim"
-  }
+  -- use { "github/copilot.vim" }
+  -- use {
+  --   "CopilotC-Nvim/CopilotChat.nvim",
+  --   branch = "main",
+  --   requires = "nvim-lua/plenary.nvim"
+  -- }
 end)
 
 -- Autocomplete (nvim-cmp)
