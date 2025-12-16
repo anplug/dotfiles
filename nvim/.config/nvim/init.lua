@@ -48,10 +48,6 @@ require('packer').startup(function()
   use { "hrsh7th/cmp-cmdline" }
   use { "hrsh7th/nvim-cmp" }
 
-
-  use { "williamboman/mason.nvim", config = true }
-  use { "williamboman/mason-lspconfig.nvim" }
-
   -- use { "github/copilot.vim" }
   -- use {
   --   "CopilotC-Nvim/CopilotChat.nvim",
@@ -107,23 +103,18 @@ cmp.setup.cmdline(':', {
   matching = { disallow_symbol_nonprefix_matching = false }
 })
 
--- Set up lspconfig.
+-- Set up LSP
 
-
--- Laguage servers
-
-require('mason').setup()
-require('mason-lspconfig').setup {
-  ensure_installed = { "rust_analyzer", 'clangd', 'lua_ls', 'solargraph' }
-}
-
-local nvim_lsp = require('lspconfig')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
--- nvim_lsp.ruby_ls.setup{}
-nvim_lsp.rust_analyzer.setup{}
-nvim_lsp.clangd.setup{}
-nvim_lsp.lua_ls.setup {
+vim.lsp.config('solargraph', {
+  capabilities = capabilities
+})
+vim.lsp.enable('solargraph')
+vim.lsp.enable('rust_analyzer')
+vim.lsp.enable('clangd')
+
+vim.lsp.config('lua_ls', {
   settings = {
     Lua = {
       diagnostics = {
@@ -131,10 +122,8 @@ nvim_lsp.lua_ls.setup {
       }
     }
   }
-}
-nvim_lsp.solargraph.setup{
-  capabilities = capabilities
-}
+})
+vim.lsp.enable('lua_ls')
 
 vim.api.nvim_set_keymap('n', '<C-i>', ':lua vim.diagnostic.open_float()<CR>', {silent = true})
 
@@ -231,14 +220,16 @@ require('nvim-web-devicons').setup {
 
 vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle<CR>', {noremap = true, silent= true})
 
--- -- Copilot
---
--- vim.g.copilot_workspace_folders = { "~/pro" }
---
--- -- CopilotChat
---
+-- Copilot
+
+vim.g.copilot_workspace_folders = { "~/pro" }
+vim.g.copilot_proxy_strict_ssl = false
+
+-- CopilotChat
+
 -- require("CopilotChat").setup {
 --   debug = true,
+--   model = "claude-sonnet-4.5",
 --   window = {
 --     layout = 'vertical', -- 'vertical', 'horizontal', 'float', 'replace'
 --     width = 80, -- fractional width of parent, or absolute width in columns when > 1
