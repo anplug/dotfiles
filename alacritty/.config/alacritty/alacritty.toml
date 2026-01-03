@@ -26,10 +26,6 @@ yellow = "0x999900"
 background = "0x000000"
 foreground = "0xb6b6b6"
 
-[terminal.shell]
-args = ["--login"]
-program = "/bin/bash"
-
 [window]
 title = "Terminal"
 
